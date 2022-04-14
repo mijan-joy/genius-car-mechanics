@@ -3,6 +3,7 @@ import { FloatingLabel, Form } from 'react-bootstrap';
 import { useCreateUserWithEmailAndPassword } from 'react-firebase-hooks/auth';
 import { Link, useNavigate } from 'react-router-dom';
 import auth from '../../firebase.init';
+import SocialLogin from './SocialLogin/SocialLogin';
 
 
 
@@ -50,9 +51,12 @@ const Register = () => {
   <FloatingLabel controlId="floatingPassword" label="Password">
     <Form.Control type="password" name="password" placeholder="Password" />
   </FloatingLabel>
+ <div className="text-center mx-auto">
  <input type="submit" value="Register" className="btn btn-primary mt-3" /> 
+ </div>
  </form>
  <p className="mt-2 text-center">Already have an account? <Link to="/login" className="text-danger text-decoration-none" onClick={navigateLogin}>Please Login</Link></p>
+ <SocialLogin></SocialLogin>
 </div>
      
       
