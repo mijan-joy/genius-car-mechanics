@@ -1,35 +1,44 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { FloatingLabel, Form } from 'react-bootstrap';
-import { useCreateUserWithEmailAndPassword } from 'react-firebase-hooks/auth';
+import { useCreateUserWithEmailAndPassword, useUpdateProfile } from 'react-firebase-hooks/auth';
 import { Link, useNavigate } from 'react-router-dom';
 import auth from '../../firebase.init';
+import Loading from '../Shared/Loading/Loading';
 import SocialLogin from './SocialLogin/SocialLogin';
 
 
 
 const Register = () => {
+  const [agree, setAgree]= useState(false);
   const [
     createUserWithEmailAndPassword,
     user,
     loading,
     error,
-  ] = useCreateUserWithEmailAndPassword(auth);
-
+  ] = useCreateUserWithEmailAndPassword(auth, {sendEmailVerification: true});
+  const [updateProfile, updating, updateError] = useUpdateProfile(auth);
     const navigate = useNavigate();
 
     const navigateLogin = (event) => {
         navigate('/login');
     }
-    if(user){
-      navigate('/home');
-    }
+    if(loading || updating){
+      return <Loading></Loading>
+  }
 
-    const handleRegister = (event) => {
+    const handleRegister = async (event) => {
         event.preventDefault();
         const name = event.target.name.value;
         const email = event.target.email.value;
         const password = event.target.password.value;
-        createUserWithEmailAndPassword( email, password);
+        // const agree = event.target.terms.checked;
+
+          await createUserWithEmailAndPassword(email, password);
+          await updateProfile({ displayName: name });
+          console.log('Updated profile');
+          navigate('/home');
+        
+
     }
 
     return (
@@ -51,11 +60,17 @@ const Register = () => {
   <FloatingLabel controlId="floatingPassword" label="Password">
     <Form.Control type="password" name="password" placeholder="Password" />
   </FloatingLabel>
- <div className="text-center mx-auto">
- <input type="submit" value="Register" className="btn btn-primary mt-3" /> 
+  <input onClick={() =>setAgree(!agree)} type="checkbox" name="terms" id="terms" className="mt-3" />
+  {/* <label className={agree ? 'ps-2 text-primary' : 'ps-2 text-danger'} for="terms">I agree to the terms and conditions</label> */}
+  <label className={`ps-2 ${agree ? 'text-primary' : 'text-danger'}`} for="terms">I agree to the terms and conditions</label>
+ <div className="text-center">
+ <input 
+ disabled={!agree}
+ className="btn btn-primary mt-3 d-block mx-auto w-50"  type="submit" 
+ value="Register" /> 
  </div>
  </form>
- <p className="mt-2 text-center">Already have an account? <Link to="/login" className="text-danger text-decoration-none" onClick={navigateLogin}>Please Login</Link></p>
+ <p className="mt-2 text-center">Already have an account? <Link to="/login" className="text-primary text-decoration-none" onClick={navigateLogin}>Please Login</Link></p>
  <SocialLogin></SocialLogin>
 </div>
      
