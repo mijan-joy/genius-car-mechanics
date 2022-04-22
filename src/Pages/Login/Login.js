@@ -45,6 +45,7 @@ const Login = () => {
         const email = emailRef.current.value;
         const password = passwordRef.current.value;
         signInWithEmailAndPassword(email, password);
+       
     }
     const navigateRegister = (event) => {
         navigate('/register');
